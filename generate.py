@@ -11,7 +11,11 @@ Here's my understanding of how this works:
 6. Create a neural network
 7. Get a random string of text to seed predictions
 8. Use the random string of text to generate next characters and build out novel strings, with various levels of "creativity" using a diversity setting
-9. Repeat steps 7 and 8 
+9. Repeat steps 7 and 8
+
+Here are some things I'd like to do:
+1. Experiment with this: (a) try to load a compiled model; (b) if the model doesn't exist, create it and save it
+2. Experiment with this: Instead of generating a random seed, explicitly provide the seed or seeds to the application
 
 '''
 
@@ -74,6 +78,15 @@ optimizer = RMSprop(lr=0.01) # RMSprop is apparently a particularly good optimiz
 # To learn: What is the "categorical_crossentropy" loss function? Why do we use it here?
 model.compile(loss='categorical_crossentropy', optimizer=optimizer) # Compile with loss function and optimizer;
 
+# Train model. Note that in the author's original version, this is inside the loop below, and sequentially trained with each iteration. I believe the purpose of that
+# was simply to show how the model improves with each iteration, and that this isn't necessary for a more production-oriented approach.
+model.fit( # Train the model
+    X, # Training data (populated above)
+    y, # Target data (what to predict; populated above)
+    batch_size=128, # Number of samples per gradient update
+    epochs=20 # Number of times to iterate over the training data in each iteration
+)
+
 # Create a function that "samples an index from a probability array," according to the author.
 # To learn: What does this do? Why do we need it?
 def sample(preds, temperature=1.0):
@@ -85,21 +98,12 @@ def sample(preds, temperature=1.0):
     return np.argmax(probas) # "Returns the indices of the maximum values along an axis"; don't understand this fully
 
 # Train the model and output generated text after each iteration.
-for iteration in range(1, 60): # For iterations in the range specified...
+for iteration in range(1, 10): # For iterations in the range specified...
 
     # Print header.
     print() # Prints blank
     print('-' * 50) # Prints a row of hyphens
     print('Iteration', iteration) # Prints "Iteration X"
-
-    # Trains model.
-    # To learn: Why do we train the model for each iteration rather than just once?
-    model.fit( # Train the model
-        X, # Training data (populated above)
-        y, # Target data (what to predict; populated above)
-        batch_size=128, # Number of samples per gradient update
-        epochs=1 # Number of times to iterate over the training data in each iteration
-    )
 
     # Set a random start index variable to use for getting a string of text to seed predictions.
     start_index = random.randint(0, len(text) - maxlen - 1)
@@ -117,8 +121,8 @@ for iteration in range(1, 60): # For iterations in the range specified...
         generated = '' # Sets variable for generated sentence
         sentence = text[start_index: start_index + maxlen] # Gets a string of maxlen length from the text using the random start index variable
         generated += sentence # Sets the generated variable to the sentence
-        print('----- Generating with seed: "' + sentence + '"')
-        sys.stdout.write(generated) # Write out the generated text
+        print('----- seed:', sentence) # Prints sentence seed
+        sys.stdout.write(generated) # To learn: Why is this here versus below? What actually happens here? Gets written to buffer? Since generated set to nothing above? What happens if I remove this?
 
         # Loop and generate text.
         # To learn: What's the significance of doing this 400 times?
@@ -127,7 +131,7 @@ for iteration in range(1, 60): # For iterations in the range specified...
             # Vectorize the sentence seed.
             # To learn: Why do we set x[] = 1? Why does that 1 have a period following it?
             x = np.zeros((1, maxlen, len(chars))) # Set a variable to an array of the specified shape that will hold the sentence seed in vectorized form
-            for t, char in enumerate(sentence): # Loop through each character in the sentence, with t as the character indexx and char as the character
+            for t, char in enumerate(sentence): # Loop through each character in the sentence, with t as the character index and char as the character
                 x[0, t, char_indices[char]] = 1. # Append the character index from the sentence (t) and the character index of the character to the variable x
 
             # Predict the next character for the random sentence seed.
@@ -139,8 +143,9 @@ for iteration in range(1, 60): # For iterations in the range specified...
             next_char = indices_char[next_index] # Set a next_char variable to an actual character using the inverse character indices variable
 
             generated += next_char # Add the next character to the generated variable
-            sentence = sentence[1:] + next_char # Adds the next_char to the sentence? To learn: What's going on here?
+            sentence = sentence[1:] + next_char # Adds the next_char to the sentence? To learn: What's going on here? Ah, I think it's adding the next character to the original sentence and then having the system predict against that sentence on the next loop
 
-            sys.stdout.write(next_char) # Write the next character
-            sys.stdout.flush() # Force python to write standard out to the terminal
-            print() # Print a blank row
+            sys.stdout.write(next_char) # To learn: Is this getting buffered here? I think it may be writing each character to the screen; true?
+            sys.stdout.flush() # To learn: What's getting flushed here? The buffered next_char written to sys.stdout.write() above?
+
+        print() # To learn: Just printing a blank line here, or somehow helping get the generated text flushed?
