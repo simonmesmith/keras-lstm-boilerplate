@@ -1,31 +1,41 @@
 from __future__ import print_function
+import helper
 from keras.layers import Dense, Activation
 from keras.layers import LSTM
 from keras.models import load_model
 from keras.models import Sequential
 from keras.optimizers import RMSprop
 from keras.utils.data_utils import get_file
-import os.path
 import numpy as np
+import os.path
 import random
 import sys
 
-def get(text, chars, char_indices, indices_char, maxlen):
+def getModel(inputFilename):
 
     # Set a variable to hold the compiled model's filename.
-    modelFileName = 'model.h5'
+    inputFileNameWithoutExtension = inputFilename.split('.')[0]
+    modelFileName = inputFileNameWithoutExtension + '.h5'
+    modelFilePath = 'models/' + modelFileName
 
     # If we already have a compiled model...
-    if os.path.exists(modelFileName):
+    if os.path.exists(modelFilePath):
 
         # Set a variable to hold the compiled model.
-        model = load_model(modelFileName)
+        model = load_model(modelFilePath)
 
         # Return the model.
         return model
 
     # Else create, compile and save the model.
     else:
+
+        # Populate key variables
+        text = helper.getText(inputFilename)
+        chars = helper.getChars(text)
+        char_indices = helper.getCharIndices(chars)
+        indices_char = helper.getIndicesChar(chars)
+        maxlen = helper.getMaxLen(text)
 
         # Cut the text in "semi-redundant sequences of maxlen characters," according to the author.
         step = 3 # Steps between numbers (e.g. 0, 3, 6, 9)
@@ -73,7 +83,7 @@ def get(text, chars, char_indices, indices_char, maxlen):
         )
 
         # Save the model with the specified file name.
-        model.save(modelFileName)
+        model.save(modelFilePath)
 
         # Return the  model.
         return model
