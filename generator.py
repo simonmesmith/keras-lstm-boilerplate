@@ -24,7 +24,7 @@ def write(inputFilename, outputFilename, numberOfOutputs, creativity):
         probas = np.random.multinomial(1, preds, 1) # Sets a variable to sample from a multinomial distribution
         return np.argmax(probas) # "Returns the indices of the maximum values along an axis"; don't understand this fully
 
-    # Make a batch of new drug names
+    # Make a batch of new outputs
     outputs = []
     for iteration in range(1, numberOfOutputs): # For iterations in the range specified...
 
