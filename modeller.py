@@ -11,7 +11,7 @@ import os.path
 import random
 import sys
 
-def getModel(inputFilename):
+def getModel(inputFilename, scanLength):
 
     # Set a variable to hold the compiled model's filename.
     inputFileNameWithoutExtension = inputFilename.split('.')[0]
@@ -35,20 +35,19 @@ def getModel(inputFilename):
         chars = helper.getChars(text)
         char_indices = helper.getCharIndices(chars)
         indices_char = helper.getIndicesChar(chars)
-        maxlen = helper.getMaxLen(text)
 
-        # Cut the text in "semi-redundant sequences of maxlen characters," according to the author.
+        # Cut the text in "semi-redundant sequences of scanLength characters," according to the author.
         step = 3 # Steps between numbers (e.g. 0, 3, 6, 9)
         chunks = [] # Variable to hold chunks (chunks = strings of text)
         next_chars = [] # Variable to hold the next character after each chunk
-        for i in range(0, len(text) - maxlen, step): # Loop from 0 to the text length minus the maximum chunk length in increments defined by the step variable
-            chunks.append(text[i: i + maxlen]) # Append a chunk using the index as the starting point
-            next_chars.append(text[i + maxlen]) # Append the first character that comes after the chunk
+        for i in range(0, len(text) - scanLength, step): # Loop from 0 to the text length minus the maximum chunk length in increments defined by the step variable
+            chunks.append(text[i: i + scanLength]) # Append a chunk using the index as the starting point
+            next_chars.append(text[i + scanLength]) # Append the first character that comes after the chunk
 
         # Vectorize the chunks for analysis.
         # To learn: Who do we use the boolean type for X and y variables below?
         # To learn: Why do we set X[] and y[] to equal 1? What's the significance of that?
-        X = np.zeros((len(chunks), maxlen, len(chars)), dtype=np.bool) # Create an empty (?) array for training data with the shape specified and the data type boolean
+        X = np.zeros((len(chunks), scanLength, len(chars)), dtype=np.bool) # Create an empty (?) array for training data with the shape specified and the data type boolean
         y = np.zeros((len(chunks), len(chars)), dtype=np.bool) # Create an empty (?) array for target data (what we want to predict) with the shape specified and the data type boolean
         for i, chunk in enumerate(chunks): # For each chunk in chunks (i = index, chunk = chunk)
             for t, char in enumerate(chunk): # For each character in the chunk (t = index, char = character)
@@ -59,7 +58,7 @@ def getModel(inputFilename):
         # To learn: What are "units" in this context?
         # To learn: What does the softmax activation function do? What is "softmax?"
         model = Sequential() # Model is sequential
-        model.add(LSTM(128, input_shape=(maxlen, len(chars)))) # Add an LSTM with 128 units and an input shape of maxlen (name maximum length) and the number of unique characters in the text (len(chars))
+        model.add(LSTM(128, input_shape=(scanLength, len(chars)))) # Add an LSTM with 128 units and an input shape of scanLength (name maximum length) and the number of unique characters in the text (len(chars))
         model.add(Dense(len(chars))) # Add a Dense layer with as many units as there are unique characters in the text (len(chars)); not that it infers the input shape from the previous layer
         model.add(Activation('softmax')) # Add the output layer with a softmax activation function
 
