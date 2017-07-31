@@ -53,8 +53,7 @@ def write(inputFilename, outputFilename, scanLength=5, outputLength=10, numberOf
             generated = generated[1:] + next_char # Remove first letter of seed and add next_char at the end; this is the seed used to predict the next character in the next loop
 
         # Append the generated text to the output
-        cleanGenerated = helper.cleanGenerated(generated)
-        outputs.append(cleanGenerated)
+        outputs.append(generated)
 
     # Save outputs to file.
     text_file = open('outputs/' + outputFilename, "w")

@@ -16,12 +16,12 @@ def getCharIndices(chars):
 def getIndicesChar(chars):
     return dict((i, c) for i, c in enumerate(chars))
 
-# Set the maximum length of a name (used throughout the code). Here set to the average length of a drug name.
-def getMaxLen(text):
-    num_names = len(text.splitlines()) # Number of names (lines in text)
-    num_chars = len(text) # Total number of characters (includes white space and line breaks; to do: remove white space and line breaks)
-    return int(round(num_chars/num_names)) # Set the maxlen value to the average length of a drug brand name
-
-def cleanGenerated(text):
-    splitText = string.split(text, '\n')
-    return splitText[1]
+def cleanOutput(outputFilename, minOutputLength=3):
+    cleaned = []
+    with open('outputs/' + outputFilename) as f:
+        for line in f:
+            if (len(line.strip()) > minOutputLength):
+                cleaned.append(line)
+    outputFile = open('outputs/' + outputFilename, "w")
+    outputFile.write(''.join(cleaned)) # Adding with '\n' added additional line break; not sure why, but to do: figure this out and join with line breaks in a way that creates only one new line per output row
+    outputFile.close()
