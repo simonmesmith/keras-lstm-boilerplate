@@ -50,10 +50,11 @@ def write(inputFilename, outputFilename, scanLength=5, outputLength=10, numberOf
             next_char = indices_char[next_index] # Set a next_char variable to an actual character using the inverse character indices variable
 
             # Update generated text. Note that we overwrite the text moving from left to right, therefore overwriting the initial seed text with all generated text.
-            generated = seed[1:] + next_char # Remove first letter of seed and add next_char at the end; this is the seed used to predict the next character in the next loop
+            generated = generated[1:] + next_char # Remove first letter of seed and add next_char at the end; this is the seed used to predict the next character in the next loop
 
         # Append the generated text to the output
-        outputs.append(generated)
+        cleanGenerated = helper.cleanGenerated(generated)
+        outputs.append(cleanGenerated)
 
     # Save outputs to file.
     text_file = open('outputs/' + outputFilename, "w")

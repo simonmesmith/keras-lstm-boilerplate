@@ -1,3 +1,3 @@
 import generator
 
-generator.write('drug-brand-names.txt', 'new-drug-brand-names.txt', 10, 10, 15, .2)
+generator.write('female-names.txt', 'new-female-names.txt', 10, 12, 10, .5)

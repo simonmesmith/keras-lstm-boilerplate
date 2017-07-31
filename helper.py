@@ -1,3 +1,5 @@
+import string
+
 # Get text and lowercase it. (Assumption: Lowercase to reduce the number of unique characters.)
 def getText(inputFilename):
     return open('inputs/' + inputFilename).read().lower()
@@ -19,3 +21,7 @@ def getMaxLen(text):
     num_names = len(text.splitlines()) # Number of names (lines in text)
     num_chars = len(text) # Total number of characters (includes white space and line breaks; to do: remove white space and line breaks)
     return int(round(num_chars/num_names)) # Set the maxlen value to the average length of a drug brand name
+
+def cleanGenerated(text):
+    splitText = string.split(text, '\n')
+    return splitText[1]
