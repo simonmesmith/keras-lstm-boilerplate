@@ -1,5 +1,5 @@
 import generator
 import helper
 
-generator.write('female-names.txt', 'new-female-names.txt', 10, 12, 10, .5)
-helper.cleanOutput('new-female-names.txt')
+generator.write('company-names.txt', 'new-company-names.txt', 10, 12, 50, .01)
+helper.cleanOutput('new-company-names.txt', 6)

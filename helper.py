@@ -21,7 +21,7 @@ def cleanOutput(outputFilename, minOutputLength=3):
     with open('outputs/' + outputFilename) as f:
         for line in f:
             if (len(line.strip()) > minOutputLength):
-                cleaned.append(line)
+                cleaned.append(line.strip())
     outputFile = open('outputs/' + outputFilename, "w")
-    outputFile.write(''.join(cleaned)) # Adding with '\n' added additional line break; not sure why, but to do: figure this out and join with line breaks in a way that creates only one new line per output row
+    outputFile.write('\n'.join(cleaned))
     outputFile.close()
