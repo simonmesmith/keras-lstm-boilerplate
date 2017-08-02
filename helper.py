@@ -1,6 +1,6 @@
 import string
 
-# Get text and lowercase it. (Assumption: Lowercase to reduce the number of unique characters.)
+# Get text and lowercase it. (Lowercase to reduce the number of unique characters.)
 def getText(inputFilename):
     return open('inputs/' + inputFilename).read().lower()
 
@@ -16,6 +16,7 @@ def getCharIndices(chars):
 def getIndicesChar(chars):
     return dict((i, c) for i, c in enumerate(chars))
 
+# Clean the output (such as to strip leading or trailing characters not overwritten cleanly as we generate strings from seeds).
 def cleanOutput(outputFilename, minOutputLength=3):
     cleaned = []
     with open('outputs/' + outputFilename) as f:
