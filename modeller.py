@@ -36,7 +36,7 @@ def getModel(inputFilename, scanLength):
         char_indices = helper.getCharIndices(chars)
         indices_char = helper.getIndicesChar(chars)
 
-        # Cut the text in "semi-redundant sequences of scanLength characters," according to the author.
+        # Scan through the text to and build an array of chunks (strings of text) and characters that follow them, for the model to learn from.
         step = 3 # Steps between numbers (e.g. 0, 3, 6, 9)
         chunks = [] # Variable to hold chunks (chunks = strings of text)
         next_chars = [] # Variable to hold the next character after each chunk
@@ -45,8 +45,8 @@ def getModel(inputFilename, scanLength):
             next_chars.append(text[i + scanLength]) # Append the first character that comes after the chunk
 
         # Vectorize the chunks for analysis.
-        # To learn: Who do we use the boolean type for X and y variables below?
-        # To learn: Why do we set X[] and y[] to equal 1? What's the significance of that?
+        # To learn: Why do we use the boolean type for X and y variables below?
+        # To learn: Why do we set X[] and y[] to equal 1? What's the significance of that? (I think one-hot encoding, but I don't know for sure if this is right, nor fully understand how one-hot encoding works.)
         X = np.zeros((len(chunks), scanLength, len(chars)), dtype=np.bool) # Create an empty (?) array for training data with the shape specified and the data type boolean
         y = np.zeros((len(chunks), len(chars)), dtype=np.bool) # Create an empty (?) array for target data (what we want to predict) with the shape specified and the data type boolean
         for i, chunk in enumerate(chunks): # For each chunk in chunks (i = index, chunk = chunk)
@@ -55,8 +55,8 @@ def getModel(inputFilename, scanLength):
                 y[i, char_indices[next_chars[i]]] = 1 # Add to target data array (name index, index of character in char_indices for the character that comes after the chunk)
 
         # Create neural network.
-        # To learn: What are "units" in this context?
-        # To learn: What does the softmax activation function do? What is "softmax?"
+        # To learn: What are "units" in this context? (I believe they are memory units.)
+        # To learn: What does the softmax activation function do? What is "softmax?" What is an activation function?
         model = Sequential() # Model is sequential
         model.add(LSTM(128, input_shape=(scanLength, len(chars)))) # Add an LSTM with 128 units and an input shape of scanLength (name maximum length) and the number of unique characters in the text (len(chars))
         model.add(Dense(len(chars))) # Add a Dense layer with as many units as there are unique characters in the text (len(chars)); not that it infers the input shape from the previous layer
