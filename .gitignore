@@ -97,3 +97,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# floydhub
+.floydexpt
+.floydignore
+
+# Mac
+.DS_Store

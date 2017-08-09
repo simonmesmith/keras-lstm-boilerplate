@@ -1,3 +1,4 @@
+import re
 import string
 
 # Get text and lowercase it. (Lowercase to reduce the number of unique characters.)
@@ -19,10 +20,11 @@ def getIndicesChar(chars):
 # Clean the output (such as to strip leading or trailing characters not overwritten cleanly as we generate strings from seeds).
 def cleanOutput(outputFilename, minOutputLength=3):
     cleaned = []
-    with open('outputs/' + outputFilename) as f:
-        for line in f:
-            if (len(line.strip()) > minOutputLength):
-                cleaned.append(line.strip())
+    with open('outputs/' + outputFilename) as output:
+        for text in output:
+            for line in text.strip().split('\r'):
+                if (len(line.strip()) > minOutputLength):
+                    cleaned.append(line.strip())
     outputFile = open('outputs/' + outputFilename, "w")
     outputFile.write('\n'.join(cleaned))
     outputFile.close()
