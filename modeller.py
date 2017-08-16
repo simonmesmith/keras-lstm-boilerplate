@@ -11,7 +11,7 @@ import os.path
 import random
 import sys
 
-def getModel(inputFilename, scanLength):
+def getModel(inputFilename, scanLength, epochs):
 
     # Set a variable to hold the compiled model's filename.
     inputFileNameWithoutExtension = inputFilename.split('.')[0]
@@ -75,7 +75,7 @@ def getModel(inputFilename, scanLength):
             X, # Training data (populated above)
             y, # Target data (what to predict; populated above)
             batch_size=128, # Number of samples per gradient update
-            epochs=25 # Number of times to iterate over the training data in each iteration
+            epochs=epochs # Number of times to pass over the training data in each iteration
         )
 
         # Save the model with the specified file name.

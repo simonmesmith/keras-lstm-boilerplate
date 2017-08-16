@@ -5,14 +5,14 @@ import numpy as np
 import random
 import sys
 
-def write(inputFilename, outputFilename, scanLength, outputLength, creativity=0.2):
+def write(inputFilename, outputFilename, scanLength, outputLength, creativity=0.2, epochs=25):
 
     # Set key variables.
     text = helper.getText(inputFilename)
     chars = helper.getChars(text)
     char_indices = helper.getCharIndices(chars)
     indices_char = helper.getIndicesChar(chars)
-    model = modeller.getModel(inputFilename, scanLength)
+    model = modeller.getModel(inputFilename, scanLength, epochs)
 
     # Create a function that returns a prediction from an array of predictions based on the specified "temperature."
     # This allows us to return a more or less creative (i.e. more or less probable) prediction.
