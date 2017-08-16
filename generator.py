@@ -16,7 +16,7 @@ def write(inputFilename, outputFilename, scanLength=5, outputLength=10, numberOf
 
     # Create a function that returns a prediction from an array of predictions based on the specified "temperature."
     # This allows us to return a more or less creative (i.e. more or less probable) prediction.
-    # To learn: Would like to have someone walk through each step of this function and what it's doing.
+    # To learn: Would like to have someone walk through each step of this function and what it's doing!
     def sample(predictions, temperature=1.0):
         predictions = np.asarray(predictions).astype('float64') # Converts the variable predictions to an array of type float64
         predictions = np.log(predictions) / temperature # Converts the variable predictions to a logarithm of predictions divided by the temperature

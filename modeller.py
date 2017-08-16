@@ -36,7 +36,8 @@ def getModel(inputFilename, scanLength):
         char_indices = helper.getCharIndices(chars)
         indices_char = helper.getIndicesChar(chars)
 
-        # Scan through the text to and build an array of chunks (strings of text) and characters that follow them, for the model to learn from.
+        # Scan through the text and build an array of chunks (strings of text) and characters that follow them, for the model to learn from.
+        # For example, in the sentence "I am going for a walk," the chunk might be "I am going for a wal" and "k" would be the next character.
         step = 3 # Steps between numbers (e.g. 0, 3, 6, 9)
         chunks = [] # Variable to hold chunks (chunks = strings of text)
         next_chars = [] # Variable to hold the next character after each chunk
@@ -55,25 +56,21 @@ def getModel(inputFilename, scanLength):
                 y[i, char_indices[next_chars[i]]] = 1 # Add to target data array (name index, index of character in char_indices for the character that comes after the chunk)
 
         # Create neural network.
-        # To learn: What are "units" in this context? (I believe they are memory units.)
-        # To learn: What does the softmax activation function do? What is "softmax?" What is an activation function?
         model = Sequential() # Model is sequential
         model.add(LSTM(128, input_shape=(scanLength, len(chars)))) # Add an LSTM with 128 memory units and an input shape of scanLength (name maximum length) and the number of unique characters in the text (len(chars))
         model.add(Dense(len(chars))) # Add a Dense layer with as many units as there are unique characters in the text (len(chars)); not that it infers the input shape from the previous layer
-        model.add(Activation('softmax')) # Add the output layer with a softmax activation function
+        model.add(Activation('softmax')) # Add the output layer with a softmax activation function (learn more at https://en.wikipedia.org/wiki/Softmax_function)
 
         # Set optimizer variable.
         # To learn: What do optimizers do in the context of machine learning?
-        # To learn: What is learning rate? What does this do?
-        optimizer = RMSprop(lr=0.01) # RMSprop is apparently a particularly good optimizer for recurrent neural networks; lr is the learning rate
+        optimizer = RMSprop(lr=0.01) # RMSprop is apparently a particularly good optimizer for recurrent neural networks; lr is the learning rate, which effectively determines how fast the neural network learns from its mistakes (too fast and it will abandon its "beliefs" too often)
 
         # Compile model.
-        # To learn: How do loss functions work? Why are there different ones?
-        # To learn: What is the "categorical_crossentropy" loss function? Why do we use it here?
-        model.compile(loss='categorical_crossentropy', optimizer=optimizer) # Compile with loss function and optimizer;
+        model.compile(loss='categorical_crossentropy', optimizer=optimizer) # Compile with loss function (which the neural network will use to optimize against) and optimizer; to learn: why "categorical_crossentropy?"
 
-        # Train model. Note that in the author's original version, this is inside the loop below, and sequentially trained with each iteration. I believe the purpose of that
-        # was simply to show how the model improves with each iteration, and that this isn't necessary for a more production-oriented approach.
+        # Train model. Note that in the @fchollet's original version (https://github.com/fchollet/keras/blob/master/examples/lstm_text_generation.py),
+        # this is inside the generator loop, and it sequentially trains with each iteration. I believe the purpose of that was simply to show how the model
+        # improves with each iteration, and that this isn't necessary for a more production-oriented approach.
         model.fit( # Train the model
             X, # Training data (populated above)
             y, # Target data (what to predict; populated above)
@@ -81,7 +78,7 @@ def getModel(inputFilename, scanLength):
             epochs=25 # Number of times to iterate over the training data in each iteration
         )
 
-        # Save the model with the specified file chunk.
+        # Save the model with the specified file name.
         model.save(modelFilePath)
 
         # Return the  model.
