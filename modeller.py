@@ -75,7 +75,7 @@ def getModel(inputFilename, scanLength, epochs):
             X, # Training data (populated above)
             y, # Target data (what to predict; populated above)
             batch_size=128, # Number of samples per gradient update
-            epochs=epochs # Number of times to pass over the training data in each iteration
+            epochs=epochs # Number of times to pass over the training data
         )
 
         # Save the model with the specified file name.
