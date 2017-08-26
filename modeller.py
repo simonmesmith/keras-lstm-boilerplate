@@ -11,18 +11,18 @@ import os.path
 import random
 import sys
 
-def getModel(inputFilename, scanLength, epochs):
+def get_model(input_filename, scan_length, epochs):
 
     # Set a variable to hold the compiled model's filename.
-    inputFileNameWithoutExtension = inputFilename.split('.')[0]
-    modelFileName = inputFileNameWithoutExtension + '.h5'
-    modelFilePath = 'models/' + modelFileName
+    input_filename_without_extension = input_filename.split('.')[0]
+    model_filename = input_filename_without_extension + '.h5'
+    model_filepath = 'models/' + model_filename
 
     # If we already have a compiled model...
-    if os.path.exists(modelFilePath):
+    if os.path.exists(model_filepath):
 
         # Set a variable to hold the compiled model.
-        model = load_model(modelFilePath)
+        model = load_model(model_filepath)
 
         # Return the model.
         return model
@@ -31,24 +31,24 @@ def getModel(inputFilename, scanLength, epochs):
     else:
 
         # Populate key variables
-        text = helper.getText(inputFilename)
-        chars = helper.getChars(text)
-        char_indices = helper.getCharIndices(chars)
-        indices_char = helper.getIndicesChar(chars)
+        text = helper.get_text(input_filename)
+        chars = helper.get_chars(text)
+        char_indices = helper.get_char_indices(chars)
+        indices_char = helper.get_indices_char(chars)
 
         # Scan through the text and build an array of chunks (strings of text) and characters that follow them, for the model to learn from.
         # For example, in the sentence "I am going for a walk," the chunk might be "I am going for a wal" and "k" would be the next character.
         step = 3 # Steps between numbers (e.g. 0, 3, 6, 9)
         chunks = [] # Variable to hold chunks (chunks = strings of text)
         next_chars = [] # Variable to hold the next character after each chunk
-        for i in range(0, len(text) - scanLength, step): # Loop from 0 to the text length minus the maximum chunk length in increments defined by the step variable
-            chunks.append(text[i: i + scanLength]) # Append a chunk using the index as the starting point
-            next_chars.append(text[i + scanLength]) # Append the first character that comes after the chunk
+        for i in range(0, len(text) - scan_length, step): # Loop from 0 to the text length minus the maximum chunk length in increments defined by the step variable
+            chunks.append(text[i: i + scan_length]) # Append a chunk using the index as the starting point
+            next_chars.append(text[i + scan_length]) # Append the first character that comes after the chunk
 
         # Vectorize the chunks for analysis.
         # To learn: Why do we use the boolean type for X and y variables below? (I think for one-hot encoding.)
         # To learn: Why do we set X[] and y[] to equal 1? What's the significance of that? (I think for one-hot encoding, but I don't know for sure if this is right, nor fully understand how one-hot encoding works.)
-        X = np.zeros((len(chunks), scanLength, len(chars)), dtype=np.bool) # Create an empty (?) array for training data with the shape specified and the data type boolean
+        X = np.zeros((len(chunks), scan_length, len(chars)), dtype=np.bool) # Create an empty (?) array for training data with the shape specified and the data type boolean
         y = np.zeros((len(chunks), len(chars)), dtype=np.bool) # Create an empty (?) array for target data (what we want to predict) with the shape specified and the data type boolean
         for i, chunk in enumerate(chunks): # For each chunk in chunks (i = index, chunk = chunk)...
             for t, char in enumerate(chunk): # For each character in the chunk (t = index, char = character)...
@@ -57,7 +57,7 @@ def getModel(inputFilename, scanLength, epochs):
 
         # Create neural network.
         model = Sequential() # Model is sequential
-        model.add(LSTM(128, input_shape=(scanLength, len(chars)))) # Add an LSTM with 128 memory units and an input shape of scanLength (name maximum length) and the number of unique characters in the text (len(chars))
+        model.add(LSTM(128, input_shape=(scan_length, len(chars)))) # Add an LSTM with 128 memory units and an input shape of scan_length (name maximum length) and the number of unique characters in the text (len(chars))
         model.add(Dense(len(chars))) # Add a Dense layer with as many units as there are unique characters in the text (len(chars)); not that it infers the input shape from the previous layer
         model.add(Activation('softmax')) # Add the output layer with a softmax activation function (learn more at https://en.wikipedia.org/wiki/Softmax_function)
 
@@ -79,7 +79,7 @@ def getModel(inputFilename, scanLength, epochs):
         )
 
         # Save the model with the specified file name.
-        model.save(modelFilePath)
+        model.save(model_filepath)
 
         # Return the  model.
         return model

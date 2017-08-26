@@ -5,14 +5,14 @@ import numpy as np
 import random
 import sys
 
-def write(inputFilename, outputFilename, scanLength, outputLength, creativity=0.2, epochs=25):
+def write(input_filename, output_filename, scan_length, output_length, creativity=0.2, epochs=25):
 
     # Set key variables.
-    text = helper.getText(inputFilename)
-    chars = helper.getChars(text)
-    char_indices = helper.getCharIndices(chars)
-    indices_char = helper.getIndicesChar(chars)
-    model = modeller.getModel(inputFilename, scanLength, epochs)
+    text = helper.get_text(input_filename)
+    chars = helper.get_chars(text)
+    char_indices = helper.get_char_indices(chars)
+    indices_char = helper.get_indices_char(chars)
+    model = modeller.get_model(input_filename, scan_length, epochs)
 
     # Create a function that returns a prediction from an array of predictions based on the specified "temperature."
     # This allows us to return a more or less creative (i.e. more or less probable) prediction.
@@ -26,16 +26,16 @@ def write(inputFilename, outputFilename, scanLength, outputLength, creativity=0.
         return np.argmax(probabilities) # "Returns the indices of the maximum values along an axis"; don't understand this fully
 
     # Create seed text and a generated variable to hold generated text.
-    start_index = random.randint(0, len(text) - scanLength - 1) # Sets the start index for the seed to a random start point with sufficient length remaining for an appropriate-length seed
-    seed = text[start_index: start_index + scanLength] # Sets the seed, a string of scanLength length from the text that starts from the random start index variable
+    start_index = random.randint(0, len(text) - scan_length - 1) # Sets the start index for the seed to a random start point with sufficient length remaining for an appropriate-length seed
+    seed = text[start_index: start_index + scan_length] # Sets the seed, a string of scan_length length from the text that starts from the random start index variable
     generated = '' # Sets a generated variable to hold generated text
 
     # Generate text for that's the output length (number of characters) specified
-    for i in range(outputLength): # Create an output of outputLength length by looping that many times and adding a character each time
+    for i in range(output_length): # Create an output of output_length length by looping that many times and adding a character each time
 
         # Vectorize the generated text.
         # To learn: Why do we set x[] = 1? Why does that 1 have a period following it? Assumption: one-hot encoding.
-        x = np.zeros((1, scanLength, len(chars))) # Set a variable to an array of the specified shape that will hold the generated text in vectorized form
+        x = np.zeros((1, scan_length, len(chars))) # Set a variable to an array of the specified shape that will hold the generated text in vectorized form
         for t, char in enumerate(seed): # Loop through each character in the seed, with t as the character index and char as the character
             x[0, t, char_indices[char]] = 1. # Append the character index from the seed (t) and the character index of the character to the variable x
 
@@ -48,9 +48,9 @@ def write(inputFilename, outputFilename, scanLength, outputLength, creativity=0.
         generated = generated + next_char
 
         # Create the seed for the next loop.
-        seed = generated[-scanLength:]
+        seed = generated[-scan_length:]
 
     # Save outputs to file.
-    text_file = open('outputs/' + outputFilename, "w")
+    text_file = open('outputs/' + output_filename, "w")
     text_file.write(generated)
     text_file.close()
