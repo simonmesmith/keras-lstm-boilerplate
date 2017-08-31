@@ -32,33 +32,33 @@ def get_model(input_filename, scan_length, epochs):
 
         # Populate key variables
         text = helper.get_text(input_filename)
-        chars = helper.get_chars(text)
-        char_indices = helper.get_char_indices(chars)
-        indices_char = helper.get_indices_char(chars)
+        unique_strings = helper.get_unique_strings(text)
+        unique_string_indices = helper.get_unique_string_indices(unique_strings)
+        indices_unique_string = helper.get_indices_unique_string(unique_strings)
 
-        # Scan through the text and build an array of chunks (strings of text) and characters that follow them, for the model to learn from.
-        # For example, in the sentence "I am going for a walk," the chunk might be "I am going for a wal" and "k" would be the next character.
+        # Scan through the text and build an array of "if_strings" and "then_strings" that follow them, for the model to learn from.
+        # For example, in the sentence "I am going for a walk," the if_string might be "I am going for a wal" and "k" would be the then_string.
         step = 3 # Steps between numbers (e.g. 0, 3, 6, 9)
-        chunks = [] # Variable to hold chunks (chunks = strings of text)
-        next_chars = [] # Variable to hold the next character after each chunk
-        for i in range(0, len(text) - scan_length, step): # Loop from 0 to the text length minus the maximum chunk length in increments defined by the step variable
-            chunks.append(text[i: i + scan_length]) # Append a chunk using the index as the starting point
-            next_chars.append(text[i + scan_length]) # Append the first character that comes after the chunk
+        if_strings = [] # Variable to hold if_string
+        then_strings = [] # Variable to hold then_string
+        for i in range(0, len(text) - scan_length, step): # Loop from 0 to the text length minus the scan length in increments defined by the step variable
+            if_strings.append(text[i: i + scan_length]) # Append an if_string using the index as the starting point
+            then_strings.append(text[i + scan_length]) # Append a then_string that comes after the if_string
 
-        # Vectorize the chunks for analysis.
+        # Vectorize the strings for analysis.
         # To learn: Why do we use the boolean type for X and y variables below? (I think for one-hot encoding.)
         # To learn: Why do we set X[] and y[] to equal 1? What's the significance of that? (I think for one-hot encoding, but I don't know for sure if this is right, nor fully understand how one-hot encoding works.)
-        X = np.zeros((len(chunks), scan_length, len(chars)), dtype=np.bool) # Create an empty (?) array for training data with the shape specified and the data type boolean
-        y = np.zeros((len(chunks), len(chars)), dtype=np.bool) # Create an empty (?) array for target data (what we want to predict) with the shape specified and the data type boolean
-        for i, chunk in enumerate(chunks): # For each chunk in chunks (i = index, chunk = chunk)...
-            for t, char in enumerate(chunk): # For each character in the chunk (t = index, char = character)...
-                X[i, t, char_indices[char]] = 1 # Add to training data array (name index, chunk character index, index of character in char_indices array)
-                y[i, char_indices[next_chars[i]]] = 1 # Add to target data array (name index, index of character in char_indices for the character that comes after the chunk)
+        X = np.zeros((len(if_strings), scan_length, len(unique_strings)), dtype=np.bool) # Create an empty (?) array for training data with the shape specified and the data type boolean
+        y = np.zeros((len(if_strings), len(unique_strings)), dtype=np.bool) # Create an empty (?) array for target data (what we want to predict) with the shape specified and the data type boolean
+        for i, if_string in enumerate(if_strings): # For each if_string in if_strings...
+            for t, char in enumerate(if_string): # For each character in the if_string (t = index, char = character)...
+                X[i, t, unique_string_indices[char]] = 1 # Add to training data array (name index, chunk character index, index of character in unique_string_indices array)
+                y[i, unique_string_indices[then_strings[i]]] = 1 # Add to target data array (name index, index of character in unique_string_indices for the character that comes after the chunk)
 
         # Create neural network.
         model = Sequential() # Model is sequential
-        model.add(LSTM(128, input_shape=(scan_length, len(chars)))) # Add an LSTM with 128 memory units and an input shape of scan_length (name maximum length) and the number of unique characters in the text (len(chars))
-        model.add(Dense(len(chars))) # Add a Dense layer with as many units as there are unique characters in the text (len(chars)); not that it infers the input shape from the previous layer
+        model.add(LSTM(128, input_shape=(scan_length, len(unique_strings)))) # Add an LSTM with 128 memory units and an input shape of scan_length (name maximum length) and the number of unique characters in the text (len(unique_strings))
+        model.add(Dense(len(unique_strings))) # Add a Dense layer with as many units as there are unique characters in the text (len(unique_strings)); not that it infers the input shape from the previous layer
         model.add(Activation('softmax')) # Add the output layer with a softmax activation function (learn more at https://en.wikipedia.org/wiki/Softmax_function)
 
         # Set optimizer variable.
