@@ -11,11 +11,11 @@ import os.path
 import random
 import sys
 
-def get_model(input_filename, scan_length, epochs):
+def get_model(input_filename, level, scan_length, epochs):
 
     # Set a variable to hold the compiled model's filename.
     input_filename_without_extension = input_filename.split('.')[0]
-    model_filename = input_filename_without_extension + '.h5'
+    model_filename = input_filename_without_extension + '.' + level + '.h5'
     model_filepath = 'models/' + model_filename
 
     # If we already have a compiled model...

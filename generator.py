@@ -12,7 +12,7 @@ def write(input_filename, output_filename, level='character', scan_length=10, ou
     unique_strings = helper.get_unique_strings(text)
     unique_string_indices = helper.get_unique_string_indices(unique_strings)
     indices_unique_string = helper.get_indices_unique_string(unique_strings)
-    model = modeller.get_model(input_filename, scan_length, epochs)
+    model = modeller.get_model(input_filename, level, scan_length, epochs)
 
     # Create a function that returns a prediction from an array of predictions based on the specified "temperature."
     # This allows us to return a more or less creative (i.e. more or less probable) prediction.
