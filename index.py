@@ -5,6 +5,7 @@ import helper
 generator.write(
     input_filename='drug-brand-names.txt', # File within the /inputs folder containing the inputs to train on
     output_filename='new-drug-brand-names.txt', # File within the /outputs folder that will hold the outputs
+    level='character', # The level at which to create the model and generate strings; valid options are "character" and "word," with "character" being the default
     scan_length=10, # How many strings to scan when predicting the next string
     output_length=500, # How many strings to include in the output
     creativity=0.2, # How creative to be; the higher the number, the more creative the output

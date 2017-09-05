@@ -5,7 +5,7 @@ import numpy as np
 import random
 import sys
 
-def write(input_filename, output_filename, scan_length, output_length, creativity=0.2, epochs=25):
+def write(input_filename, output_filename, level='character', scan_length=10, output_length=500, creativity=0.2, epochs=25):
 
     # Set key variables.
     text = helper.get_text(input_filename)
