@@ -9,7 +9,7 @@ def write(input_filename, output_filename, level='character', scan_length=10, ou
 
     # Set key variables.
     text = helper.get_text(input_filename)
-    unique_strings = helper.get_unique_strings(text)
+    unique_strings = helper.get_unique_strings(text, level)
     unique_string_indices = helper.get_unique_string_indices(unique_strings)
     indices_unique_string = helper.get_indices_unique_string(unique_strings)
     model = modeller.get_model(input_filename, level, scan_length, epochs)
