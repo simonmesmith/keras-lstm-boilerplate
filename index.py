@@ -9,7 +9,7 @@ generator.write(
     scan_length=10, # How many strings to scan when predicting the next string
     output_length=500, # How many strings to include in the output
     creativity=0.2, # How creative to be; the higher the number, the more creative the output
-    epochs=200 # How many epochs (passes over the input to learn from) to use for training
+    epochs=50 # How many epochs (passes over the input to learn from) to use for training
 )
 
 # Clean up generated output.
