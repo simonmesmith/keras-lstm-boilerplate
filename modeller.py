@@ -38,15 +38,15 @@ def get_model(input_filename, level, scan_length, epochs):
 
         # Build an array of "if_strings" and "then_strings" that follow them, for the model to learn from. For example, in the sentence "I am going for a walk,"
         # the if_string might be "I am going for a wal" and "k" would be the then_string.
-        string_list = text.split() if level == 'word' else text # List of strings to iterate through for if_strings and then_strings; an array of words in the text if word-level, or the text itself if character-level
+        strings_in_order = helper.split_strings_as_needed(text, level)
         step = 3 # Steps between loops (e.g. 0, 3, 6, 9)
         if_strings = [] # Variable to hold if_strings
         then_strings = [] # Variable to hold then_strings
 
-        for i in range(0, len(string_list) - scan_length, step): # Loop from 0 to the string_list length minus the scan length in increments defined by the step variable
-            if_string = ' '.join(string_list[i: i + scan_length]) if level == 'word' else string_list[i: i + scan_length] # Create the if_string differently depending on whether we're creating a word-level or character-level model
+        for i in range(0, len(strings_in_order) - scan_length, step): # Loop from 0 to the strings_in_order length minus the scan length in increments defined by the step variable
+            if_string = ' '.join(strings_in_order[i: i + scan_length]) if level == 'word' else strings_in_order[i: i + scan_length] # Create the if_string differently depending on whether we're creating a word-level or character-level model
             if_strings.append(if_string) # Append the if_string to the if_strings array
-            then_strings.append(string_list[i + scan_length]) # Append a then_string that comes after the if_string to the then_strings array
+            then_strings.append(strings_in_order[i + scan_length]) # Append a then_string that comes after the if_string to the then_strings array
 
         # Vectorize the strings for analysis.
         # To learn: Why do we use the boolean type for X and y variables below? (I think for one-hot encoding.)
@@ -54,7 +54,8 @@ def get_model(input_filename, level, scan_length, epochs):
         X = np.zeros((len(if_strings), scan_length, len(unique_strings)), dtype=np.bool) # Create an empty (?) array for training data with the shape specified and the data type boolean
         y = np.zeros((len(if_strings), len(unique_strings)), dtype=np.bool) # Create an empty (?) array for target data (what we want to predict) with the shape specified and the data type boolean
         for i, if_string in enumerate(if_strings): # For each if_string in if_strings...
-            for t, substring in enumerate(if_string): # For each substring in the if_string (example: "went" is a substring in "I went to the park")...
+            if_string_list = helper.split_strings_as_needed(if_string, level) # Make appropriate list of strings depending on whether the level is word or character
+            for t, substring in enumerate(if_string_list): # For each substring in the if_string (example: "went" is a substring in "I went to the park")...
                 X[i, t, unique_string_indices[substring]] = 1 # Add to training data array (if_string index, substring index, index of substring in unique_string_indices array)
                 y[i, unique_string_indices[then_strings[i]]] = 1 # Add to target data array (if_string index, index of substring in unique_string_indices for the substring that comes after the if_string)
 

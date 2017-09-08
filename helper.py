@@ -21,6 +21,13 @@ def get_unique_string_indices(unique_strings):
 def get_indices_unique_string(unique_strings):
     return dict((i, s) for i, s in enumerate(unique_strings))
 
+# Return an array of words in their original order if the level is "words" otherwise just the text (which is the characters in order)
+def split_strings_as_needed(strings, level):
+    return strings.split() if level == 'word' else strings
+
+def join_strings_as_needed(strings, level):
+    return ' '.join(strings) if level == 'word' else strings
+
 # Clean the output (such as to strip leading or trailing characters not overwritten cleanly as we generate strings from seeds).
 def clean_output(output_filename, min_row_length=3):
     cleaned = []

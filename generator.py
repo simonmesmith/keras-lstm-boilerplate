@@ -26,9 +26,10 @@ def write(input_filename, output_filename, level='character', scan_length=10, ou
         return np.argmax(probabilities) # "Returns the indices of the maximum values along an axis"; don't understand this fully
 
     # Create seed text and a generated_string variable to hold the generated string.
-    random_start_index = random.randint(0, len(text) - scan_length - 1) # Sets the start index for the seed to a random start point with sufficient length remaining for an appropriate-length seed
-    seed = text[random_start_index: random_start_index + scan_length] # Sets the seed, a string of scan_length length from the text that starts from the random start index variable
-    generated_string = '' # Sets a generated_string variable to hold generated_string text
+    strings_in_order = helper.split_strings_as_needed(text, level) # The strings to use in their original order, either an array of words or just the straight text
+    random_start_index = random.randint(0, len(strings_in_order) - scan_length - 1) # Sets the start index for the seed to a random start point with sufficient length remaining for an appropriate-length seed
+    seed = strings_in_order[random_start_index: random_start_index + scan_length] # Sets the seed, a string of scan_length length from the text that starts from the random start index variable
+    generated_string = [] if level == 'word' else '' # Sets a generated_string variable to hold generated_string text
 
     # Generate text that's the output length (number of strings) specified
     for i in range(output_length): # Create an output of output_length length by looping that many times and adding a string each time
@@ -36,21 +37,25 @@ def write(input_filename, output_filename, level='character', scan_length=10, ou
         # Vectorize the generated_string text.
         # To learn: Why do we set x[] = 1? Why does that 1 have a period following it? Assumption: one-hot encoding.
         x = np.zeros((1, scan_length, len(unique_strings))) # Set a variable to an array of the specified shape that will hold the generated_string text in vectorized form
-        for t, char in enumerate(seed): # Loop through each character in the seed, with t as the character index and char as the character
-            x[0, t, unique_string_indices[char]] = 1. # Append the character index from the seed (t) and the character index of the character to the variable x
+        for t, substring in enumerate(seed): # Loop through each substring in the string, with t as the substring index
+            x[0, t, unique_string_indices[substring]] = 1. # Append the substring index from the seed (t) and the string index of the substring to the variable x
 
-        # Predict the next character for the seed text.
+        # Predict the next string.
         predictions = model.predict(x, verbose=0)[0] # Set a variable to hold a prediction; x is the input data, verbosity of 0 to suppress logging
         next_index = sample(predictions, creativity) # Get the predicted next_index value from an array of predictions using the specified level of creativity
         next_string = indices_unique_string[next_index] # Set a next_string variable to an actual string using the inverse string indices variable
 
         # Add string to generated_string text.
-        generated_string = generated_string + next_string
+        if level is 'word':
+            generated_string.append(next_string)
+        else:
+            generated_string = generated_string + next_string
 
         # Create the seed for the next loop.
         seed = generated_string[-scan_length:]
 
     # Save outputs to file.
+    output_text = ' '.join(generated_string) if level == 'word' else generated_string
     text_file = open('outputs/' + output_filename, "w")
-    text_file.write(generated_string)
+    text_file.write(output_text)
     text_file.close()
